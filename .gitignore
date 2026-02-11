@@ -34,6 +34,9 @@ yarn-error.*
 .env
 .env*.local
 
+# Android 서명 (keystore 경로·비밀번호 포함)
+credentials.json
+
 # typescript
 *.tsbuildinfo
 
