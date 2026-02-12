@@ -36,6 +36,7 @@ yarn-error.*
 
 # Android 서명 (keystore 경로·비밀번호 포함)
 credentials.json
+credentials
 
 # typescript
 *.tsbuildinfo
