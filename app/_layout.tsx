@@ -4,16 +4,8 @@ import * as Linking from 'expo-linking';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { getVideoIdFromDeepLink } from '../utils/deepLink';
 import '../global.css';
-
-const SCHEME = 'cheezstereo';
-
-function getVideoIdFromDeepLink(url: string): string | null {
-  const prefix = SCHEME + '://player/';
-  if (!url.startsWith(prefix)) return null;
-  const id = url.slice(prefix.length).split('/')[0]?.trim();
-  return id || null;
-}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
