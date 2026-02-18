@@ -52,7 +52,7 @@ export default function SearchBar({
   return (
     <Animated.View
       style={animatedStyle}
-      className="bg-white rounded-xl shadow-md flex-row items-center px-4 py-3 min-h-[48px]"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-md flex-row items-center px-4 py-3 min-h-[48px]"
       accessibilityRole="search"
     >
       <Ionicons name="search" size={22} color={isFocused ? '#ef4444' : '#9ca3af'} />
@@ -63,7 +63,7 @@ export default function SearchBar({
         onBlur={handleBlur}
         placeholder={placeholder}
         placeholderTextColor="#9ca3af"
-        className="flex-1 ml-3 text-base text-gray-900"
+        className="flex-1 ml-3 text-base text-gray-900 dark:text-gray-100"
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"

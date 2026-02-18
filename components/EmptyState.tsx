@@ -18,23 +18,16 @@ export default function EmptyState({
   onAction,
 }: EmptyStateProps) {
   return (
-    <View className="flex-1 items-center justify-center bg-gray-50 px-6">
-      {/* 아이콘 */}
-      <View className="bg-red-50 p-6 rounded-full mb-6">
+    <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900 px-6">
+      <View className="bg-red-50 dark:bg-red-900/20 p-6 rounded-full mb-6">
         <Ionicons name={icon} size={64} color="#ef4444" />
       </View>
-
-      {/* 제목 */}
-      <Text className="text-gray-900 text-2xl font-bold text-center mb-3">
+      <Text className="text-gray-900 dark:text-gray-100 text-2xl font-bold text-center mb-3">
         {title}
       </Text>
-
-      {/* 설명 */}
-      <Text className="text-gray-600 text-base text-center leading-relaxed mb-8">
+      <Text className="text-gray-600 dark:text-gray-400 text-base text-center leading-relaxed mb-8">
         {description}
       </Text>
-
-      {/* 액션 버튼 */}
       {actionLabel && onAction && (
         <TouchableOpacity
           onPress={onAction}

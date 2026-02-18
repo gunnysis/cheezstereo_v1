@@ -61,13 +61,13 @@ export default function SortFilterButton({
       <AnimatedTouchable
         onPress={handlePress}
         style={animatedButtonStyle}
-        className="flex-row items-center bg-white px-4 py-3 rounded-xl shadow-md min-h-[44px]"
+        className="flex-row items-center bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-md min-h-[44px]"
         activeOpacity={0.9}
         accessibilityLabel={`정렬: ${currentLabel}. 두 번 탭하여 변경`}
         accessibilityRole="button"
         accessibilityHint="정렬 옵션을 엽니다"
       >
-        <Text className="text-gray-700 text-base font-semibold mr-1">
+        <Text className="text-gray-700 dark:text-gray-200 text-base font-semibold mr-1">
           {currentLabel}
         </Text>
         <Ionicons name="chevron-down" size={18} color="#374151" />
@@ -92,7 +92,7 @@ export default function SortFilterButton({
           <Animated.View
             entering={SlideInDown.springify().damping(15)}
             exiting={SlideOutDown.duration(200)}
-            className="bg-white rounded-2xl w-4/5 max-w-sm overflow-hidden shadow-2xl"
+            className="bg-white dark:bg-gray-800 rounded-2xl w-4/5 max-w-sm overflow-hidden shadow-2xl"
           >
             <View className="bg-red-500 px-6 py-4">
               <Text className="text-white text-xl font-bold">정렬 옵션</Text>
@@ -102,8 +102,8 @@ export default function SortFilterButton({
                 <TouchableOpacity
                   key={option.value}
                   onPress={() => handleSortSelect(option.value)}
-                  className={`px-6 py-4 border-b border-gray-100 flex-row items-center justify-between ${
-                    currentSort === option.value ? 'bg-red-50' : ''
+                  className={`px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex-row items-center justify-between ${
+                    currentSort === option.value ? 'bg-red-50 dark:bg-red-900/20' : ''
                   }`}
                   activeOpacity={0.7}
                 >
@@ -111,7 +111,7 @@ export default function SortFilterButton({
                     className={`text-base ${
                       currentSort === option.value
                         ? 'text-red-500 font-bold'
-                        : 'text-gray-700'
+                        : 'text-gray-700 dark:text-gray-200'
                     }`}
                   >
                     {option.label}
@@ -124,10 +124,10 @@ export default function SortFilterButton({
             </ScrollView>
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              className="px-6 py-4 border-t border-gray-200"
+              className="px-6 py-4 border-t border-gray-200 dark:border-gray-700"
               activeOpacity={0.7}
             >
-              <Text className="text-center text-gray-600 text-base font-semibold">닫기</Text>
+              <Text className="text-center text-gray-600 dark:text-gray-400 text-base font-semibold">닫기</Text>
             </TouchableOpacity>
           </Animated.View>
         </Animated.View>

@@ -1,23 +1,48 @@
-import React from 'react';
-import { Stack } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, useColorScheme } from 'react-native';
+import * as Linking from 'expo-linking';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
-// #region agent log
-const runId = 'post-fix';
-fetch('http://127.0.0.1:7249/ingest/6c7428a1-eb6f-4814-9976-39d6a66064e5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/_layout.tsx:RootLayout',message:'React version at runtime',data:{reactVersion:React.version,runId},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-// #endregion
+const SCHEME = 'cheezstereo';
+
+function getVideoIdFromDeepLink(url: string): string | null {
+  const prefix = SCHEME + '://player/';
+  if (!url.startsWith(prefix)) return null;
+  const id = url.slice(prefix.length).split('/')[0]?.trim();
+  return id || null;
+}
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleUrl = (url: string) => {
+      const videoId = getVideoIdFromDeepLink(url);
+      if (videoId) router.replace({ pathname: '/player/[id]', params: { id: videoId } });
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl(url);
+    });
+
+    const sub = Linking.addEventListener('url', (e) => handleUrl(e.url));
+    return () => sub.remove();
+  }, [router]);
+
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      <View style={{ flex: 1 }} className={colorScheme === 'dark' ? 'dark' : ''}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </View>
     </SafeAreaProvider>
   );
 }

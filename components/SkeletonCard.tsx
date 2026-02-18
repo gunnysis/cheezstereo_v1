@@ -33,9 +33,8 @@ export default function SkeletonCard() {
   });
 
   return (
-    <View className="bg-white rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden">
-      {/* 썸네일 스켈레톤 */}
-      <View className="w-full aspect-video bg-gray-200 relative overflow-hidden">
+    <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden">
+      <View className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
         <Animated.View style={[{ width: 400, height: '100%' }, animatedStyle]}>
           <LinearGradient
             colors={['transparent', 'rgba(255,255,255,0.5)', 'transparent']}
@@ -46,16 +45,12 @@ export default function SkeletonCard() {
         </Animated.View>
       </View>
 
-      {/* 정보 영역 스켈레톤 */}
       <View className="p-4">
-        {/* 제목 스켈레톤 (2줄) */}
         <View className="mb-3">
-          <View className="h-5 bg-gray-200 rounded-md mb-2 w-full" />
-          <View className="h-5 bg-gray-200 rounded-md w-3/4" />
+          <View className="h-5 bg-gray-200 dark:bg-gray-600 rounded-md mb-2 w-full" />
+          <View className="h-5 bg-gray-200 dark:bg-gray-600 rounded-md w-3/4" />
         </View>
-
-        {/* 날짜 스켈레톤 */}
-        <View className="h-4 bg-gray-200 rounded-md w-24" />
+        <View className="h-4 bg-gray-200 dark:bg-gray-600 rounded-md w-24" />
       </View>
     </View>
   );

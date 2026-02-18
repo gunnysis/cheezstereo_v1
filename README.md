@@ -53,8 +53,13 @@ cp .env.example .env
 # .env 파일을 열어 YOUTUBE_API_KEY= 발급받은키 입력
 ```
 
-- **로컬**: `.env` 또는 `.env.local`에 `YOUTUBE_API_KEY=...` 설정  
-- **EAS 빌드**: [EAS Secrets](https://docs.expo.dev/build-reference/variables/#using-secrets-in-environment-variables)에 `YOUTUBE_API_KEY` 추가
+- **로컬 / Expo Go**: `.env` 또는 `.env.local`에 `YOUTUBE_API_KEY=...` 설정  
+- **APK·스토어 배포 (EAS Build)**: EAS 서버에서 빌드하므로 **반드시** EAS Secrets에 키를 넣어야 합니다. 아래처럼 추가한 뒤 **재빌드**하세요.
+  ```bash
+  eas secret:create --name YOUTUBE_API_KEY --value "발급받은_API_키" --scope project
+  ```
+  또는 [Expo Dashboard](https://expo.dev) → 프로젝트 선택 → Secrets에서 `YOUTUBE_API_KEY` 추가.  
+  추가 후 `eas build --platform android --profile production` (또는 사용 중인 프로필)으로 다시 빌드해야 새 APK/AAB에 키가 포함됩니다.
 
 **API 키 발급**: [Google Cloud Console](https://console.cloud.google.com/) → 프로젝트 선택 → API 및 서비스 → 라이브러리에서 **YouTube Data API v3** 활성화 → 사용자 인증 정보 → **API 키** 생성 → `.env`에 입력
 
@@ -95,6 +100,8 @@ CheezStereo/
 ├── services/youtube.ts      # YouTube API 호출
 ├── types/youtube.ts
 ├── docs/
+│   ├── android-signing.md   # Android 업로드 키·PEM 등록
+│   ├── 설치-가이드.md       # 설치 불가 시 점검 체크리스트
 │   └── 개인정보처리방침.md
 ├── app.config.js           # Expo 설정 (환경변수·플러그인)
 ├── tailwind.config.js
@@ -110,7 +117,7 @@ CheezStereo/
 |------|-----|
 | 앱 이름 | 치즈스테레오 |
 | 패키지(Android) | com.cheez.projectcheezstereo |
-| 버전 | 1.0.1 (app.config.js 기준) |
+| 버전 | 1.0.2 (app.config.js 기준) |
 
 ---
 
@@ -129,10 +136,28 @@ eas build --platform android --profile production
 
 ## 문제 해결
 
+**사용자가 앱을 설치할 수 없을 때**  
+- **스토어/업로드**: Play Console에 등록된 업로드 키와 빌드 시 사용한 keystore가 일치해야 합니다.  
+- **해결 절차**: `docs/설치-가이드.md`와 `docs/android-signing.md`를 순서대로 확인하세요.  
+- 요약: 현재 keystore(credentials/android/keystore.jks)의 PEM을 Play Console에 업로드 인증서로 등록한 뒤, 같은 keystore로 서명한 AAB만 업로드합니다.
+
 **API 키 오류**  
 - `.env` / `.env.local`이 프로젝트 루트에 있는지 확인  
+- `.env`가 없다면 `cp .env.example .env` 후 `YOUTUBE_API_KEY=` 에 발급받은 키 입력  
 - `YOUTUBE_API_KEY=` 뒤에 공백 없이 키만 입력  
-- 변경 후 `npx expo start -c` 로 캐시 클리어 후 재실행
+- 변경 후 `npx expo start -c` 로 캐시 클리어 후 재실행  
+
+**APK 배포 후 "API 키가 설정되지 않았습니다"**  
+- APK는 EAS 서버에서 빌드되므로 로컬 `.env`는 사용되지 않습니다.  
+- [EAS Secrets](https://docs.expo.dev/build-reference/variables/#using-secrets-in-environment-variables)에 `YOUTUBE_API_KEY`를 추가한 뒤, **반드시 다시 빌드**하세요. (`eas secret:create --name YOUTUBE_API_KEY --value "키값" --scope project` 후 `eas build ...` 재실행)
+
+**"Requests from this Android client application &lt;empty&gt; are blocked"**  
+- Google Cloud Console에서 API 키의 **애플리케이션 제한사항** 때문입니다.  
+- [Google Cloud Console](https://console.cloud.google.com/) → API 및 서비스 → 사용자 인증 정보 → 해당 API 키 → **애플리케이션 제한사항**  
+  - **제한 없음**으로 두면 모든 환경(Expo Go, 개발 빌드, 프로덕션)에서 동작합니다.  
+  - **Android 앱**으로 제한했다면, 사용하는 앱을 추가해야 합니다.  
+    - **Expo Go**로 실행 중이면: 패키지명 `host.exp.exponent` + Expo Go 앱의 SHA-1 지문 추가.  
+    - **개발/프로덕션 빌드**면: 패키지명 `com.cheez.projectcheezstereo` + 해당 빌드 keystore의 SHA-1 추가.
 
 **의존성 충돌**  
 ```bash
@@ -155,6 +180,9 @@ npx expo start -c
 
 ## 정책·문서
 
+- **설치 불가 해결**: `docs/설치-가이드.md` (사용자 설치 불가 시 점검)
+- **Android 서명**: `docs/android-signing.md` (Play Console 업로드 키 등록)
+- **개선·기능 추천**: `docs/개선-및-기능-추천.md` (개선 제안 및 추천 기능 목록)
 - 개인정보처리방침: `docs/개인정보처리방침.md` (플레이스토어 등 연동용)
 
 ---

@@ -65,14 +65,28 @@ export const getChannelVideos = async (
       description: item.snippet.description,
     }));
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const apiError = error.response.data as YouTubeAPIError;
-      console.error('YouTube API 에러:', apiError.error.message);
-      throw new Error(apiError.error.message);
-    }
-    throw error;
+    throw normalizeYouTubeError(error);
   }
 };
+
+/**
+ * API 에러 메시지를 사용자 친화적으로 변환
+ */
+function normalizeYouTubeError(error: unknown): Error {
+  if (!axios.isAxiosError(error) || !error.response) throw error instanceof Error ? error : new Error(String(error));
+  const apiError = error.response.data as YouTubeAPIError | undefined;
+  const msg = apiError?.error?.message ?? '';
+  console.error('YouTube API 에러:', msg);
+  if (msg.includes('Android client application') && msg.includes('blocked')) {
+    return new Error(
+      'YouTube API 키가 이 앱에서 차단되어 있습니다. Google Cloud Console → 사용자 인증 정보 → API 키 → 해당 키 → 애플리케이션 제한사항에서 "제한 없음"으로 두거나, Android 앱으로 제한한 경우 패키지명과 SHA-1을 추가해 주세요. (Expo Go 사용 시 패키지: host.exp.exponent)'
+    );
+  }
+  if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('daily limit') || msg.toLowerCase().includes('rate limit')) {
+    return new Error('잠시 후 다시 시도해 주세요. (API 사용량 제한)');
+  }
+  return new Error(msg || '비디오를 불러오는데 실패했습니다.');
+}
 
 /**
  * 채널 내 비디오 검색
@@ -122,12 +136,7 @@ export const searchChannelVideos = async (
       description: item.snippet.description,
     }));
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const apiError = error.response.data as YouTubeAPIError;
-      console.error('YouTube API 에러:', apiError.error.message);
-      throw new Error(apiError.error.message);
-    }
-    throw error;
+    throw normalizeYouTubeError(error);
   }
 };
 

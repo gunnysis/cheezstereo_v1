@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, Dimensions, Share, Alert } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,38 +8,58 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { getRelativeTime } from '../../services/youtube';
 import { Header } from '../../components/Header';
+import { YOUTUBE_URLS } from '../../constants/youtube';
 
 const { width } = Dimensions.get('window');
 
 export default function PlayerScreen() {
   const { id, title, description, publishedAt } = useLocalSearchParams<{
     id: string;
-    title: string;
+    title: string | string[];
     description?: string;
     publishedAt?: string;
   }>();
   const router = useRouter();
   const [playing, setPlaying] = useState(true);
 
-  const onStateChange = (state: string) => {
+  const resolvedId = typeof id === 'string' ? id : Array.isArray(id) ? id[0] : '';
+  const resolvedTitle =
+    typeof title === 'string'
+      ? title
+      : Array.isArray(title)
+        ? title[0]
+        : '비디오 재생';
+
+  const onStateChange = useCallback((state: string) => {
+    setPlaying(state === 'playing' || state === 'buffering');
     if (state === 'ended') {
-      setPlaying(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  };
+  }, []);
 
   const handleClose = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.back();
   };
 
+  const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await Share.share({
+        title: resolvedTitle,
+        url: YOUTUBE_URLS.video(resolvedId),
+        message: `${resolvedTitle}\n${YOUTUBE_URLS.video(resolvedId)}`,
+      });
+    } catch {
+      Alert.alert('오류', '공유할 수 없습니다.');
+    }
+  };
+
   return (
     <View className="flex-1 bg-gray-900">
       <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-gray-900">
         <Header
-          title={
-            typeof title === 'string' ? title : Array.isArray(title) ? title[0] : '비디오 재생'
-          }
+          title={resolvedTitle}
           variant="player"
           safeAreaTop={false}
           leftButton={{
@@ -47,42 +67,45 @@ export default function PlayerScreen() {
             onPress: handleClose,
             accessibilityLabel: '닫기',
           }}
+          rightButton={{
+            icon: 'share-outline',
+            onPress: handleShare,
+            accessibilityLabel: '공유하기',
+          }}
         />
 
-        {/* 플레이어 */}
-      <View className="bg-black">
-        <YoutubePlayer
-          height={(width * 9) / 16}
-          play={playing}
-          videoId={id}
-          onChangeState={onStateChange}
-        />
-      </View>
+        <View
+          className="bg-black"
+          accessible
+          accessibilityLabel={playing ? '동영상 재생 중' : '동영상 일시 정지'}
+          accessibilityRole="none"
+        >
+          <YoutubePlayer
+            height={(width * 9) / 16}
+            play={playing}
+            videoId={resolvedId}
+            onChangeState={onStateChange}
+          />
+        </View>
 
-      {/* 비디오 정보 */}
-      <ScrollView className="flex-1 bg-white">
+      <ScrollView className="flex-1 bg-white dark:bg-gray-900">
         <Animated.View entering={SlideInDown.delay(200).springify()} className="p-6">
-          {/* 제목 */}
-          <Text className="text-gray-900 text-2xl font-bold mb-3 leading-tight">
-            {title}
+          <Text className="text-gray-900 dark:text-gray-100 text-2xl font-bold mb-3 leading-tight">
+            {resolvedTitle}
           </Text>
-          
-          {/* 게시일 */}
           {publishedAt && (
             <View className="flex-row items-center mb-6">
-              <View className="bg-red-50 p-2 rounded-lg mr-2">
+              <View className="bg-red-50 dark:bg-red-900/30 p-2 rounded-lg mr-2">
                 <Ionicons name="calendar-outline" size={16} color="#ef4444" />
               </View>
-              <Text className="text-gray-600 text-base">
+              <Text className="text-gray-600 dark:text-gray-400 text-base">
                 {getRelativeTime(publishedAt)}
               </Text>
             </View>
           )}
-
-          {/* 설명 */}
           {description && (
-            <View className="mt-2 bg-gray-50 p-4 rounded-xl">
-              <Text className="text-gray-700 text-base leading-relaxed">
+            <View className="mt-2 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+              <Text className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
                 {description}
               </Text>
             </View>

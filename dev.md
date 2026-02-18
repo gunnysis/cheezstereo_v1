@@ -1,4 +1,4 @@
-
+# 개발 참고
 
 npx expo run:android
 npx expo start --clear
@@ -19,6 +19,7 @@ eas build --platform ios --profile preview
 eas build --platform all --profile production --auto-submit
 eas build --platform android --profile production --auto-submit
   - android install app (need before run app on android emulator)
+- 설치 불가 시: docs/설치-가이드.md 및 docs/android-signing.md 참고
 - git
   - create new branch
 git checkout -b [name]

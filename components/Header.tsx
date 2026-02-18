@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -22,10 +22,12 @@ type HeaderProps = {
   };
 };
 
-/** 단색 밝은 노란 + 부드러운 그림자 (tabs) */
 const TABS_BG = '#FEF08A';
+const TABS_BG_DARK = '#1f2937';
 const TABS_TITLE_COLOR = '#713f12';
+const TABS_TITLE_COLOR_DARK = '#f3f4f6';
 const TABS_BUTTON_COLOR = '#854d0e';
+const TABS_BUTTON_COLOR_DARK = '#e5e7eb';
 
 const variantStyles: Record<
   HeaderVariant,
@@ -52,7 +54,12 @@ export function Header({
   rightButton,
 }: HeaderProps) {
   const insets = useSafeAreaInsets();
+  const isDark = useColorScheme() === 'dark';
   const style = variantStyles[variant];
+  const tabsBg = variant === 'tabs' && isDark ? TABS_BG_DARK : (variant === 'tabs' ? TABS_BG : '#111827');
+  const tabsTitleColor = variant === 'tabs' && isDark ? TABS_TITLE_COLOR_DARK : style.titleColor;
+  const tabsButtonColor = variant === 'tabs' && isDark ? TABS_BUTTON_COLOR_DARK : style.buttonColor;
+  const tabsBorderColor = variant === 'tabs' && isDark ? 'rgba(255,255,255,0.08)' : style.borderColor;
 
   const containerStyle = [
     styles.container,
@@ -63,8 +70,8 @@ export function Header({
       borderBottomLeftRadius: variant === 'tabs' ? 20 : 0,
       borderBottomRightRadius: variant === 'tabs' ? 20 : 0,
       borderBottomWidth: 1,
-      borderBottomColor: style.borderColor,
-      backgroundColor: variant === 'tabs' ? TABS_BG : '#111827',
+      borderBottomColor: tabsBorderColor,
+      backgroundColor: tabsBg,
     },
     Platform.OS === 'android' && variant === 'tabs' && { elevation: 8 },
     Platform.OS === 'ios' &&
@@ -85,19 +92,24 @@ export function Header({
             styles.button,
             variant === 'tabs' && styles.buttonTabs,
             style.buttonBg && { backgroundColor: style.buttonBg },
+            variant === 'tabs' && isDark && { backgroundColor: 'rgba(255,255,255,0.1)' },
           ]}
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={leftButton.accessibilityLabel ?? '뒤로 가기'}
         >
-          <Ionicons name={leftButton.icon} size={22} color={style.buttonColor} />
+          <Ionicons name={leftButton.icon} size={22} color={tabsButtonColor} />
         </TouchableOpacity>
       ) : (
         <View style={styles.placeholder} />
       )}
 
       <Text
-        style={[styles.title, { color: style.titleColor }, variant === 'tabs' && styles.titleTabs]}
+        style={[
+          styles.title,
+          { color: variant === 'tabs' ? tabsTitleColor : style.titleColor },
+          variant === 'tabs' && styles.titleTabs,
+        ]}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
@@ -111,12 +123,13 @@ export function Header({
             styles.button,
             variant === 'tabs' && styles.buttonTabs,
             style.buttonBg && { backgroundColor: style.buttonBg },
+            variant === 'tabs' && isDark && { backgroundColor: 'rgba(255,255,255,0.1)' },
           ]}
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={rightButton.accessibilityLabel ?? '버튼'}
         >
-          <Ionicons name={rightButton.icon} size={22} color={style.buttonColor} />
+          <Ionicons name={rightButton.icon} size={22} color={variant === 'tabs' ? tabsButtonColor : style.buttonColor} />
         </TouchableOpacity>
       ) : (
         <View style={styles.placeholder} />
