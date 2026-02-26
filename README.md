@@ -1,77 +1,125 @@
 # 치즈스테레오 (CheezStereo)
 
-치즈스테레오 밴드의 음악과 영상을 한곳에서 감상할 수 있는 모바일 앱입니다.  
-Expo(React Native) + TypeScript + YouTube Data API v3 기반입니다.
+한국 인디 밴드 **치즈스테레오**의 음악과 영상을 한곳에서 감상할 수 있는 Android 앱입니다.
+
+> 치즈스테레오는 2008년 서울에서 결성, 2019년까지 활동한 인디 팝·록 밴드입니다.
+> 7장의 음반, 24곡, 19개의 영상(뮤직비디오·라이브·인터뷰)을 남겼습니다.
 
 ---
 
 ## 주요 기능
 
-| 구분 | 기능 |
-|------|------|
-| **음악** | YouTube Music 채널 목록 표시, 앱 내 재생, YouTube Music 앱으로 연결 |
-| **영상** | YouTube 채널 목록 표시, 앱 내 재생, YouTube 앱으로 연결 |
-| **검색** | 음악/영상 키워드 검색 (디바운스 적용) |
-| **정렬** | 최신순, 조회수순, 관련도순, 제목순 |
-| **UX** | Pull-to-Refresh, 스켈레톤 로딩, 햅틱 피드백, 빈 상태 안내 |
+| 탭 | 설명 |
+|----|------|
+| **음악** | 앨범 목록 → 앨범 상세(트랙 리스트) → YouTube 재생 |
+| **영상** | 뮤직비디오 / 라이브 / 인터뷰 카테고리 탭 |
+| **저장** | 북마크한 곡·영상 목록 (로컬 저장, 오프라인 유지) |
+| **소개** | 밴드 정보, 멤버, 활동 이력, YouTube 채널 링크 |
+
+- **미니 플레이어** — 다른 탭으로 이동해도 하단에 현재 재생 곡 유지
+- **저장 버튼** — 앨범 트랙·영상 카드에서 북마크로 바로 저장
+- **공유하기** — 플레이어 화면에서 YouTube 링크 공유
+- **딥링크** — `cheezstereo://player/<videoId>` 형식으로 직접 재생
+- **다크 모드** — 시스템 설정 자동 반영
+- **햅틱 피드백** — 주요 액션마다 진동 피드백
+
+---
+
+## 디스코그래피
+
+### 앨범
+
+| 년도 | 제목 | 구분 | 트랙 수 |
+|------|------|------|---------|
+| 2009 | Don't Work Be Happy! | 정규 1집 | 11곡 |
+| 2011 | 화성로맨스 | 싱글 | 1곡 |
+| 2012 | TWO NIGHTs | 싱글 | 2곡 |
+| 2013 | Lonely Man | EP | 2곡 |
+| 2015 | 왜 그래 | EP | 4곡 |
+| 2017 | 여행의 시간 / Brink | EP | 2곡 |
+| 2019 | Cosmic Comics Alarm | 싱글 | 1곡 |
+
+### 영상 (총 19개)
+
+- **뮤직비디오 (11)** — Hello, 화성로맨스, 패션피플, 오늘밤, 불타는 내마음, Dance Now, 왜 그래, 유유히 흐르네, 여행의 시간, Dance Now (Official Audio), Cosmic Comics Alarm
+- **라이브 (6)** — 오예 LIVE, 한밤의 에스프레소, 청춘파도, 화성로맨스, Eve, 유유히 흐르네
+- **인터뷰 (2)** — Mirrorball Interview 2013, 오여홍 늬우-스
 
 ---
 
 ## 기술 스택
 
-- **프레임워크**: Expo SDK 54 (React Native)
-- **언어**: TypeScript
-- **스타일**: NativeWind (Tailwind for RN)
-- **라우팅**: Expo Router (파일 기반)
-- **API**: YouTube Data API v3
-- **플랫폼**: Android (온라인 전용)
+| 항목 | 기술 |
+|------|------|
+| 프레임워크 | React Native 0.81.5 + Expo SDK 54 |
+| 언어 | TypeScript (strict mode) |
+| 라우팅 | Expo Router v6 (파일 기반) |
+| 스타일 | NativeWind v4 (Tailwind CSS) |
+| 애니메이션 | React Native Reanimated v4 |
+| 로컬 저장소 | AsyncStorage |
+| YouTube 재생 | react-native-youtube-iframe |
+| 빌드/배포 | EAS Build + EAS Submit |
+| 주요 플랫폼 | Android |
 
 ---
 
 ## 시작하기
 
-### 요구 사항
+### 사전 요구 사항
 
 - Node.js 18+
-- npm
-- YouTube Data API v3 키
+- Android Studio (에뮬레이터 또는 실기기)
 
-### 1. 저장소 클론 및 의존성 설치
+### 설치
 
 ```bash
 git clone <저장소 URL>
 cd CheezStereo
-npm install
+npm install --legacy-peer-deps
 ```
 
-### 2. 환경 변수 (YouTube API 키)
+> `--legacy-peer-deps` 필수 — React 19와 일부 패키지의 peer dependency 충돌 우회
 
-API 키는 **환경 변수**로만 넣으며, 코드/저장소에는 포함하지 않습니다.
+### 환경 변수 (선택)
+
+메인 Music·Videos 탭은 **정적 카탈로그**를 사용하므로 API 키 없이도 정상 동작합니다.
+YouTube API를 직접 사용하는 기능(예: 커스텀 검색)이 필요할 경우만 아래를 설정합니다.
 
 ```bash
-cp .env.example .env
-# .env 파일을 열어 YOUTUBE_API_KEY= 발급받은키 입력
+# 프로젝트 루트에 .env 파일 생성
+YOUTUBE_API_KEY=발급받은_키
 ```
 
-- **로컬 / Expo Go**: `.env` 또는 `.env.local`에 `YOUTUBE_API_KEY=...` 설정  
-- **APK·스토어 배포 (EAS Build)**: EAS 서버에서 빌드하므로 **반드시** EAS Secrets에 키를 넣어야 합니다. 아래처럼 추가한 뒤 **재빌드**하세요.
-  ```bash
-  eas secret:create --name YOUTUBE_API_KEY --value "발급받은_API_키" --scope project
-  ```
-  또는 [Expo Dashboard](https://expo.dev) → 프로젝트 선택 → Secrets에서 `YOUTUBE_API_KEY` 추가.  
-  추가 후 `eas build --platform android --profile production` (또는 사용 중인 프로필)으로 다시 빌드해야 새 APK/AAB에 키가 포함됩니다.
-
-**API 키 발급**: [Google Cloud Console](https://console.cloud.google.com/) → 프로젝트 선택 → API 및 서비스 → 라이브러리에서 **YouTube Data API v3** 활성화 → 사용자 인증 정보 → **API 키** 생성 → `.env`에 입력
-
-### 3. 실행
+EAS 빌드 환경에서는 `.env` 대신 EAS Secrets를 사용합니다:
 
 ```bash
-# 개발 서버
-npm start
+eas secret:create --name YOUTUBE_API_KEY --value "발급받은_키" --scope project
+```
+
+### 실행
+
+```bash
+# 개발 서버 (캐시 초기화)
+npx expo start --clear
 
 # Android 기기/에뮬레이터
-npm run android
+npx expo run:android
 ```
+
+---
+
+## 빌드 및 배포
+
+```bash
+# 개발 빌드
+eas build --platform android --profile development
+
+# 프로덕션 빌드 + Google Play 자동 제출
+eas build --platform android --profile production --auto-submit
+```
+
+프로덕션 빌드는 `credentials/` 디렉토리의 로컬 keystore를 사용합니다 (`.gitignore`에 포함, 저장소에 커밋되지 않음).
+상세 내용은 `docs/설치-가이드.md`를 참고하세요.
 
 ---
 
@@ -79,35 +127,58 @@ npm run android
 
 ```
 CheezStereo/
-├── app/                    # Expo Router
-│   ├── (tabs)/             # 탭: 음악, 영상
-│   │   ├── _layout.tsx
-│   │   ├── music.tsx
-│   │   └── videos.tsx
-│   ├── player/[id].tsx      # 비디오 재생
-│   ├── _layout.tsx
-│   └── index.tsx
+├── app/
+│   ├── (tabs)/
+│   │   ├── music.tsx         # 음악 탭 (앨범 목록)
+│   │   ├── videos.tsx        # 영상 탭 (카테고리 탭)
+│   │   ├── saved.tsx         # 저장 탭 (북마크 목록)
+│   │   └── about.tsx         # 소개 탭 (밴드 정보)
+│   ├── album/[id].tsx        # 앨범 상세 (트랙 리스트)
+│   ├── player/[id].tsx       # YouTube 플레이어
+│   └── _layout.tsx           # 루트 레이아웃 (PlayerProvider)
 ├── components/
-│   ├── Header.tsx          # 공통 헤더 (탭/플레이어)
-│   ├── MusicCard.tsx
-│   ├── VideoCard.tsx
-│   ├── SearchBar.tsx
-│   ├── SortFilterButton.tsx
-│   ├── SkeletonCard.tsx
-│   ├── EmptyState.tsx
-│   └── LoadingSpinner.tsx
-├── constants/youtube.ts     # 채널 ID, 정렬 옵션
-├── services/youtube.ts      # YouTube API 호출
-├── types/youtube.ts
-├── docs/
-│   ├── android-signing.md   # Android 업로드 키·PEM 등록
-│   ├── 설치-가이드.md       # 설치 불가 시 점검 체크리스트
+│   ├── AlbumCard.tsx         # 앨범 목록 카드
+│   ├── TrackItem.tsx         # 트랙 행 (번호·제목·저장)
+│   ├── VideoCard.tsx         # 영상 카드
+│   ├── MusicCard.tsx         # 음악 카드
+│   ├── MiniPlayer.tsx        # 하단 고정 미니 플레이어
+│   ├── VideoThumbnail.tsx    # 공유 썸네일 (그라디언트+오류처리)
+│   └── Header.tsx            # 공유 헤더
+├── contexts/
+│   └── PlayerContext.tsx     # 전역 현재 재생 곡 상태
+├── constants/
+│   ├── catalog.ts            # 정적 디스코그래피 데이터
+│   ├── about.ts              # 밴드 소개 데이터
+│   └── youtube.ts            # YouTube URL 상수
+├── types/
+│   ├── catalog.ts            # 카탈로그 타입 정의
+│   └── youtube.ts            # YouTube API 타입 정의
+├── hooks/
+│   ├── useSavedVideos.ts     # 북마크 CRUD (AsyncStorage)
+│   └── useChannelVideos.ts   # YouTube API 훅 (보존)
+├── services/
+│   └── youtube.ts            # YouTube API + 유틸 함수
+├── docs/                     # 문서
+│   ├── changelog.md
+│   ├── 개선-및-기능-추천.md
+│   ├── 설치-가이드.md
 │   └── 개인정보처리방침.md
-├── app.config.js           # Expo 설정 (환경변수·플러그인)
+├── app.config.js             # Expo 설정
 ├── tailwind.config.js
-├── global.css
-└── package.json
+└── CLAUDE.md                 # AI 코드 에디터용 아키텍처 가이드
 ```
+
+---
+
+## 문서
+
+| 파일 | 내용 |
+|------|------|
+| `docs/changelog.md` | 버전별 변경 이력 |
+| `docs/개선-및-기능-추천.md` | 구현 완료 항목 및 향후 개선 제안 |
+| `docs/설치-가이드.md` | 설치·빌드·배포 오류 해결 가이드 |
+| `docs/개인정보처리방침.md` | 개인정보 처리방침 |
+| `CLAUDE.md` | AI 코드 에디터용 아키텍처 가이드 |
 
 ---
 
@@ -116,79 +187,13 @@ CheezStereo/
 | 항목 | 값 |
 |------|-----|
 | 앱 이름 | 치즈스테레오 |
-| 패키지(Android) | com.cheez.projectcheezstereo |
-| 버전 | 1.0.2 (app.config.js 기준) |
+| 패키지 (Android) | com.cheez.projectcheezstereo |
+| 버전 | 1.2.0 (versionCode 9) |
+| 최근 배포 | 2026-02-26 (Google Play) |
 
 ---
 
-## 빌드 (EAS)
+## 링크
 
-```bash
-npm install -g eas-cli
-eas login
-eas build:configure
-eas build --platform android --profile production
-```
-
-상세 빌드/배포 명령은 `dev.md`를 참고하세요.
-
----
-
-## 문제 해결
-
-**사용자가 앱을 설치할 수 없을 때**  
-- **스토어/업로드**: Play Console에 등록된 업로드 키와 빌드 시 사용한 keystore가 일치해야 합니다.  
-- **해결 절차**: `docs/설치-가이드.md`와 `docs/android-signing.md`를 순서대로 확인하세요.  
-- 요약: 현재 keystore(credentials/android/keystore.jks)의 PEM을 Play Console에 업로드 인증서로 등록한 뒤, 같은 keystore로 서명한 AAB만 업로드합니다.
-
-**API 키 오류**  
-- `.env` / `.env.local`이 프로젝트 루트에 있는지 확인  
-- `.env`가 없다면 `cp .env.example .env` 후 `YOUTUBE_API_KEY=` 에 발급받은 키 입력  
-- `YOUTUBE_API_KEY=` 뒤에 공백 없이 키만 입력  
-- 변경 후 `npx expo start -c` 로 캐시 클리어 후 재실행  
-
-**APK 배포 후 "API 키가 설정되지 않았습니다"**  
-- APK는 EAS 서버에서 빌드되므로 로컬 `.env`는 사용되지 않습니다.  
-- [EAS Secrets](https://docs.expo.dev/build-reference/variables/#using-secrets-in-environment-variables)에 `YOUTUBE_API_KEY`를 추가한 뒤, **반드시 다시 빌드**하세요. (`eas secret:create --name YOUTUBE_API_KEY --value "키값" --scope project` 후 `eas build ...` 재실행)
-
-**"Requests from this Android client application &lt;empty&gt; are blocked"**  
-- Google Cloud Console에서 API 키의 **애플리케이션 제한사항** 때문입니다.  
-- [Google Cloud Console](https://console.cloud.google.com/) → API 및 서비스 → 사용자 인증 정보 → 해당 API 키 → **애플리케이션 제한사항**  
-  - **제한 없음**으로 두면 모든 환경(Expo Go, 개발 빌드, 프로덕션)에서 동작합니다.  
-  - **Android 앱**으로 제한했다면, 사용하는 앱을 추가해야 합니다.  
-    - **Expo Go**로 실행 중이면: 패키지명 `host.exp.exponent` + Expo Go 앱의 SHA-1 지문 추가.  
-    - **개발/프로덕션 빌드**면: 패키지명 `com.cheez.projectcheezstereo` + 해당 빌드 keystore의 SHA-1 추가.
-
-**의존성 충돌**  
-```bash
-npm install --legacy-peer-deps
-```
-
-**캐시 초기화**  
-```bash
-npx expo start -c
-```
-
----
-
-## 채널 링크
-
-- [YouTube Music - 치즈스테레오](https://music.youtube.com/channel/UC8JozAPzI7Tbiivvv5icIFA)
-- [YouTube - @cheezstereo](https://www.youtube.com/@cheezstereo)
-
----
-
-## 정책·문서
-
-- **설치 불가 해결**: `docs/설치-가이드.md` (사용자 설치 불가 시 점검)
-- **Android 서명**: `docs/android-signing.md` (Play Console 업로드 키 등록)
-- **개선·기능 추천**: `docs/개선-및-기능-추천.md` (개선 제안 및 추천 기능 목록)
-- 개인정보처리방침: `docs/개인정보처리방침.md` (플레이스토어 등 연동용)
-
----
-
-## 참고 링크
-
-- [Expo 문서](https://docs.expo.dev/)
-- [NativeWind](https://www.nativewind.dev/)
-- [YouTube Data API v3](https://developers.google.com/youtube/v3)
+- [YouTube 공식 채널](https://www.youtube.com/@cheezstereo)
+- [YouTube Music 채널](https://music.youtube.com/channel/UC8JozAPzI7Tbiivvv5icIFA)
