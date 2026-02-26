@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, Dimensions, Share, Alert } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,6 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { getRelativeTime } from '../../services/youtube';
 import { Header } from '../../components/Header';
 import { YOUTUBE_URLS } from '../../constants/youtube';
+import { usePlayer } from '../../contexts/PlayerContext';
 
 const { width } = Dimensions.get('window');
 
@@ -20,15 +21,24 @@ export default function PlayerScreen() {
     publishedAt?: string;
   }>();
   const router = useRouter();
+  const { setCurrentVideo } = usePlayer();
   const [playing, setPlaying] = useState(true);
 
   const resolvedId = typeof id === 'string' ? id : Array.isArray(id) ? id[0] : '';
   const resolvedTitle =
-    typeof title === 'string'
-      ? title
-      : Array.isArray(title)
-        ? title[0]
-        : '비디오 재생';
+    typeof title === 'string' ? title : Array.isArray(title) ? title[0] : '비디오 재생';
+
+  useEffect(() => {
+    if (resolvedId) {
+      setCurrentVideo({
+        id: resolvedId,
+        title: resolvedTitle,
+        publishedAt: typeof publishedAt === 'string' ? publishedAt : undefined,
+        description: typeof description === 'string' ? description : undefined,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedId]);
 
   const onStateChange = useCallback((state: string) => {
     setPlaying(state === 'playing' || state === 'buffering');
@@ -62,11 +72,7 @@ export default function PlayerScreen() {
           title={resolvedTitle}
           variant="player"
           safeAreaTop={false}
-          leftButton={{
-            icon: 'close',
-            onPress: handleClose,
-            accessibilityLabel: '닫기',
-          }}
+          leftButton={{ icon: 'close', onPress: handleClose, accessibilityLabel: '닫기' }}
           rightButton={{
             icon: 'share-outline',
             onPress: handleShare,
@@ -88,30 +94,30 @@ export default function PlayerScreen() {
           />
         </View>
 
-      <ScrollView className="flex-1 bg-white dark:bg-gray-900">
-        <Animated.View entering={SlideInDown.delay(200).springify()} className="p-6">
-          <Text className="text-gray-900 dark:text-gray-100 text-2xl font-bold mb-3 leading-tight">
-            {resolvedTitle}
-          </Text>
-          {publishedAt && (
-            <View className="flex-row items-center mb-6">
-              <View className="bg-red-50 dark:bg-red-900/30 p-2 rounded-lg mr-2">
-                <Ionicons name="calendar-outline" size={16} color="#ef4444" />
+        <ScrollView className="flex-1 bg-white dark:bg-gray-900">
+          <Animated.View entering={SlideInDown.delay(200).springify()} className="p-6">
+            <Text className="text-gray-900 dark:text-gray-100 text-2xl font-bold mb-3 leading-tight">
+              {resolvedTitle}
+            </Text>
+            {publishedAt && (
+              <View className="flex-row items-center mb-6">
+                <View className="bg-red-50 dark:bg-red-900/30 p-2 rounded-lg mr-2">
+                  <Ionicons name="calendar-outline" size={16} color="#ef4444" />
+                </View>
+                <Text className="text-gray-600 dark:text-gray-400 text-base">
+                  {getRelativeTime(typeof publishedAt === 'string' ? publishedAt : '')}
+                </Text>
               </View>
-              <Text className="text-gray-600 dark:text-gray-400 text-base">
-                {getRelativeTime(publishedAt)}
-              </Text>
-            </View>
-          )}
-          {description && (
-            <View className="mt-2 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
-              <Text className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
-                {description}
-              </Text>
-            </View>
-          )}
-        </Animated.View>
-      </ScrollView>
+            )}
+            {description ? (
+              <View className="mt-2 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+                <Text className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+                  {description}
+                </Text>
+              </View>
+            ) : null}
+          </Animated.View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );

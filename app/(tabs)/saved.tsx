@@ -1,12 +1,6 @@
 import React from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-  useColorScheme,
-  Image,
+  View, Text, FlatList, TouchableOpacity, Alert, useColorScheme, Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -14,11 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSavedVideos } from '../../hooks/useSavedVideos';
 import type { SavedVideoItem } from '../../utils/savedVideos';
 import { getRelativeTime } from '../../services/youtube';
+import { usePlayer } from '../../contexts/PlayerContext';
 
 function SavedCard({
-  item,
-  onPress,
-  onRemove,
+  item, onPress, onRemove,
 }: {
   item: SavedVideoItem;
   onPress: () => void;
@@ -36,11 +29,7 @@ function SavedCard({
     >
       <View className="w-32 h-24 bg-gray-200 dark:bg-gray-700 rounded-l-2xl overflow-hidden">
         {item.thumbnail ? (
-          <Image
-            source={{ uri: item.thumbnail }}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
+          <Image source={{ uri: item.thumbnail }} className="w-full h-full" resizeMode="cover" />
         ) : (
           <View className="w-full h-full items-center justify-center bg-gray-300 dark:bg-gray-600">
             <Ionicons name="musical-notes" size={28} color="#9ca3af" />
@@ -60,10 +49,7 @@ function SavedCard({
         </Text>
       </View>
       <TouchableOpacity
-        onPress={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
+        onPress={(e) => { e.stopPropagation(); onRemove(); }}
         className="p-4 justify-center"
         accessibilityLabel="목록에서 제거"
         accessibilityRole="button"
@@ -77,9 +63,11 @@ function SavedCard({
 export default function SavedScreen() {
   const router = useRouter();
   const { list, loading, remove } = useSavedVideos();
+  const { setCurrentVideo } = usePlayer();
 
   const handlePlay = (item: SavedVideoItem) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setCurrentVideo({ id: item.id, title: item.title, publishedAt: item.publishedAt });
     router.push({
       pathname: '/player/[id]',
       params: {
@@ -121,7 +109,7 @@ export default function SavedScreen() {
           나중에 보기
         </Text>
         <Text className="text-gray-600 dark:text-gray-400 text-base text-center">
-          음악이나 영상 카드에서 "나중에 보기"를 누르면 여기에 저장됩니다.
+          음악이나 영상 카드에서 북마크 아이콘을 누르면 여기에 저장됩니다.
         </Text>
       </View>
     );

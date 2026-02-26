@@ -5,6 +5,8 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getVideoIdFromDeepLink } from '../utils/deepLink';
+import { PlayerProvider } from '../contexts/PlayerContext';
+import MiniPlayer from '../components/MiniPlayer';
 import '../global.css';
 
 export default function RootLayout() {
@@ -27,14 +29,13 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <View style={{ flex: 1 }} className={colorScheme === 'dark' ? 'dark' : ''}>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-      </View>
+      <PlayerProvider>
+        <View style={{ flex: 1 }} className={colorScheme === 'dark' ? 'dark' : ''}>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false }} />
+          <MiniPlayer />
+        </View>
+      </PlayerProvider>
     </SafeAreaProvider>
   );
 }

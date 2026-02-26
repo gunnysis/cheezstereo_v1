@@ -39,7 +39,7 @@ export default function TabsLayout() {
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
         },
         header: ({ options }) => {
@@ -47,15 +47,20 @@ export default function TabsLayout() {
             typeof options.headerTitle === 'string'
               ? options.headerTitle
               : (options.title ?? '');
+          const isAbout = title === '정보';
           return (
             <Header
               title={title}
               variant="tabs"
-              rightButton={{
-                icon: 'link',
-                onPress: onChannelPress,
-                accessibilityLabel: '채널 링크',
-              }}
+              rightButton={
+                isAbout
+                  ? undefined
+                  : {
+                      icon: 'link',
+                      onPress: onChannelPress,
+                      accessibilityLabel: '채널 링크',
+                    }
+              }
             />
           );
         },
@@ -89,6 +94,16 @@ export default function TabsLayout() {
           headerTitle: '나중에 보기',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="bookmark" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: '정보',
+          headerTitle: '정보',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="information-circle" size={size} color={color} />
           ),
         }}
       />

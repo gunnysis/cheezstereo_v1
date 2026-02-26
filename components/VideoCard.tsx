@@ -1,10 +1,12 @@
 import React, { memo } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { YouTubeVideo } from '../types/youtube';
 import { getRelativeTime } from '../services/youtube';
+import VideoThumbnail from './VideoThumbnail';
+import { addSavedVideo } from '../utils/savedVideos';
 
 interface VideoCardProps {
   video: YouTubeVideo;
@@ -16,7 +18,18 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 function VideoCard({ video, onPress, index }: VideoCardProps) {
   const relativeTime = getRelativeTime(video.publishedAt);
-  const [thumbError, setThumbError] = React.useState(false);
+
+  const handleSave = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await addSavedVideo({
+      id: video.id,
+      title: video.title,
+      thumbnail: video.thumbnail,
+      publishedAt: video.publishedAt,
+      description: video.description,
+    });
+    Alert.alert('저장됨', '나중에 보기 목록에 추가되었습니다.');
+  };
 
   return (
     <AnimatedTouchable
@@ -26,38 +39,9 @@ function VideoCard({ video, onPress, index }: VideoCardProps) {
       activeOpacity={0.9}
       accessibilityRole="button"
       accessibilityLabel={`${video.title}, ${relativeTime}`}
-      accessibilityHint="두 번 탭하면 재생 옵션을 엽니다"
+      accessibilityHint="두 번 탭하면 재생합니다"
     >
-      {/* 썸네일 */}
-      <View className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative">
-        {!thumbError ? (
-          <Image
-            source={{ uri: video.thumbnail }}
-            className="w-full h-full"
-            resizeMode="cover"
-            onError={() => setThumbError(true)}
-          />
-        ) : (
-          <View className="w-full h-full items-center justify-center bg-gray-300 dark:bg-gray-600">
-            <View className="bg-red-500/90 p-4 rounded-full">
-              <Ionicons name="play" size={28} color="#ffffff" />
-            </View>
-          </View>
-        )}
-        
-        {/* 그라디언트 오버레이 */}
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.7)']}
-          className="absolute bottom-0 left-0 right-0 h-20"
-        />
-        
-        {/* 재생 아이콘 */}
-        <View className="absolute inset-0 items-center justify-center">
-          <View className="bg-red-500/90 p-4 rounded-full">
-            <Ionicons name="play" size={28} color="#ffffff" />
-          </View>
-        </View>
-      </View>
+      <VideoThumbnail uri={video.thumbnail} />
 
       <View className="p-4">
         <Text
@@ -67,20 +51,29 @@ function VideoCard({ video, onPress, index }: VideoCardProps) {
         >
           {video.title}
         </Text>
-        <View className="flex-row items-center">
-          <Ionicons name="time-outline" size={14} color="#9ca3af" />
-          <Text className="text-gray-500 dark:text-gray-400 text-base ml-1">
-            {relativeTime}
-          </Text>
-          {video.viewCount && (
-            <>
-              <Text className="text-gray-400 text-base mx-2">•</Text>
-              <Ionicons name="eye-outline" size={14} color="#9ca3af" />
-              <Text className="text-gray-500 dark:text-gray-400 text-base ml-1">
-                {video.viewCount}
-              </Text>
-            </>
-          )}
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <Ionicons name="time-outline" size={14} color="#9ca3af" />
+            <Text className="text-gray-500 dark:text-gray-400 text-sm ml-1">{relativeTime}</Text>
+            {video.viewCount && (
+              <>
+                <Text className="text-gray-400 text-sm mx-2">•</Text>
+                <Ionicons name="eye-outline" size={14} color="#9ca3af" />
+                <Text className="text-gray-500 dark:text-gray-400 text-sm ml-1">
+                  {video.viewCount}
+                </Text>
+              </>
+            )}
+          </View>
+          <TouchableOpacity
+            onPress={(e) => { e.stopPropagation(); handleSave(); }}
+            activeOpacity={0.7}
+            className="p-1.5"
+            accessibilityRole="button"
+            accessibilityLabel="나중에 보기에 저장"
+          >
+            <Ionicons name="bookmark-outline" size={20} color="#9ca3af" />
+          </TouchableOpacity>
         </View>
       </View>
     </AnimatedTouchable>

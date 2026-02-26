@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const base = {
   name: '치즈스테레오',
   slug: 'CheezStereo',
-  version: '1.1.0',
+  version: '1.2.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
