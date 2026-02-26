@@ -17,6 +17,13 @@ const base = {
   description: '치즈스테레오 밴드의 음악과 영상을 한곳에서. YouTube 채널 연동.',
   scheme: 'cheezstereo',
 
+  updates: {
+    url: 'https://u.expo.dev/7ca2a398-9647-481d-b531-cc12d1a93e27',
+  },
+  runtimeVersion: {
+    policy: 'fingerprint',
+  },
+
   splash: {
     image: './assets/splash-icon.png',
     resizeMode: 'contain',
@@ -44,6 +51,7 @@ const base = {
 
   plugins: [
     'expo-router',
+    'expo-updates',
     'expo-dev-client',
     [
       'expo-build-properties',

@@ -50,3 +50,12 @@ jobs:
     type: submit
     params:
       build_id: ${{ needs.build_android.outputs.build_id }}
+
+  publish_ota_update:
+    name: OTA 업데이트 배포 (JS 변경만)
+    needs: [get_existing_build]
+    if: ${{ needs.get_existing_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
