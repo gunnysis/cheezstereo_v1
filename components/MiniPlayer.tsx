@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { usePlayer } from '../contexts/PlayerContext';
 
-const TAB_BAR_HEIGHT = 60;
+const TAB_BAR_HEIGHT = 64;
 
 function MiniPlayer() {
   const { currentVideo, clearCurrentVideo } = usePlayer();

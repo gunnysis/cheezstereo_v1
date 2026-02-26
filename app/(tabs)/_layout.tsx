@@ -33,7 +33,7 @@ export default function TabsLayout() {
 
   useEffect(() => {
     const handler = BackHandler.addEventListener('hardwareBackPress', () => {
-      const path = pathnameRef.current;
+      const path = pathnameRef.current || '';
       const isOnTabScreen = !path.startsWith('/album') && !path.startsWith('/player');
       if (!isOnTabScreen) return false;
       if (backPressedOnce.current) return false;

@@ -119,7 +119,7 @@ export default function AboutScreen() {
 
       {/* 앱 정보 */}
       <View className="items-center py-8">
-        <Text className="text-gray-400 dark:text-gray-600 text-xs">CheezStereo App v1.2.0</Text>
+        <Text className="text-gray-400 dark:text-gray-600 text-xs">CheezStereo App v1.3.0</Text>
         <Text className="text-gray-400 dark:text-gray-600 text-xs mt-0.5">
           Made with ♥ for CheezStereo fans
         </Text>
