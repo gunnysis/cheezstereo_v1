@@ -1,0 +1,21 @@
+# Android 프리뷰 APK 빌드 (내부 테스트용)
+# 트리거: 수동 실행 (EAS CLI 또는 EAS 대시보드)
+#
+# 실행 방법:
+#   eas workflow:run preview-android.yml
+#
+# 결과: EAS 대시보드에서 APK 다운로드 가능
+#   https://expo.dev/accounts/parkgunny/projects/CheezStereo/builds
+
+name: Android 프리뷰 APK 빌드
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_preview:
+    name: Android APK 빌드
+    type: build
+    params:
+      platform: android
+      profile: preview

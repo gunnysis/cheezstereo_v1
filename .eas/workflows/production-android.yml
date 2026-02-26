@@ -1,0 +1,52 @@
+# Android 프로덕션 빌드 및 Google Play 자동 배포
+# 트리거: main 브랜치에 push될 때 자동 실행
+#
+# 사전 준비 (최초 1회):
+#   1. Android 키스토어를 EAS에 업로드:
+#      eas credentials --platform android --profile production-ci
+#   2. Google Play 서비스 계정 키를 EAS에 업로드:
+#      EAS 대시보드 → Submit → Android credentials 에서 설정
+#      또는: eas secret:create --name GOOGLE_SERVICE_ACCOUNT_KEY --type file --value .key/apps-2182e-4cfe31bef56b.json
+#
+# GitHub 연동:
+#   EAS 대시보드 → Project Settings → GitHub → 저장소 연결 후 워크플로우 자동 감지
+
+name: Android 프로덕션 배포
+
+on:
+  push:
+    branches: ['main']
+
+concurrency:
+  group: production-android
+  cancel_in_progress: true
+
+jobs:
+  fingerprint:
+    name: 네이티브 변경 감지
+    type: fingerprint
+    environment: production
+
+  get_existing_build:
+    name: 기존 빌드 재사용 확인
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production-ci
+
+  build_android:
+    name: Android AAB 빌드
+    needs: [get_existing_build]
+    if: ${{ !needs.get_existing_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production-ci
+
+  submit_android:
+    name: Google Play 제출
+    needs: [build_android]
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}

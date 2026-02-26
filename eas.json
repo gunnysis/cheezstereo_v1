@@ -20,6 +20,12 @@
       "autoIncrement": true,
       "env": { "APP_ENV": "production" },
       "android": { "credentialsSource": "local" }
+    },
+    "production-ci": {
+      "developmentClient": false,
+      "autoIncrement": true,
+      "env": { "APP_ENV": "production" },
+      "android": { "credentialsSource": "remote" }
     }
   },
   "submit": {
@@ -32,6 +38,11 @@
       },
       "android": {
         "serviceAccountKeyPath": ".key/apps-2182e-4cfe31bef56b.json",
+        "track": "production"
+      }
+    },
+    "production-ci": {
+      "android": {
         "track": "production"
       }
     }
