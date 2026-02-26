@@ -2,6 +2,7 @@ export interface Track {
   id: string;
   title: string;
   youtubeId?: string; // undefined = not available on YouTube
+  lyrics?: string;    // undefined = lyrics section hidden in player
 }
 
 export interface Album {

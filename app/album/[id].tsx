@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Header } from '../../components/Header';
 import TrackItem from '../../components/TrackItem';
@@ -15,9 +15,12 @@ const TYPE_LABELS = {
   single: '싱글',
 } as const;
 
+const MINI_PLAYER_HEIGHT = 80;
+
 export default function AlbumScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { setCurrentVideo } = usePlayer();
 
   const album = ALBUMS.find((a) => a.id === id);
@@ -105,7 +108,7 @@ export default function AlbumScreen() {
             albumYear={album.year}
           />
         )}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: MINI_PLAYER_HEIGHT + insets.bottom + 24 }}
         className="bg-white dark:bg-gray-900"
       />
     </View>

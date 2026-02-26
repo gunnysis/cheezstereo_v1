@@ -28,7 +28,7 @@ export default function AboutScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900" contentContainerStyle={{ paddingBottom: 88 }}>
       {/* 히어로 */}
       <View className="bg-yellow-200 dark:bg-gray-800 items-center py-10 px-6">
         <View className="w-24 h-24 bg-red-500 rounded-full items-center justify-center mb-4">

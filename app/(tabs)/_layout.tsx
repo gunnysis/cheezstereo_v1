@@ -1,6 +1,7 @@
-import { Alert, useColorScheme } from 'react-native';
+import { Alert, BackHandler, ToastAndroid, useColorScheme } from 'react-native';
+import { useRef, useEffect } from 'react';
 import * as Linking from 'expo-linking';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '../../components/Header';
@@ -24,6 +25,25 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === 'dark';
   const onChannelPress = useChannelMenu();
+  const pathname = usePathname();
+  const backPressedOnce = useRef(false);
+  const pathnameRef = useRef(pathname);
+
+  useEffect(() => { pathnameRef.current = pathname; }, [pathname]);
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      const path = pathnameRef.current;
+      const isOnTabScreen = !path.startsWith('/album') && !path.startsWith('/player');
+      if (!isOnTabScreen) return false;
+      if (backPressedOnce.current) return false;
+      backPressedOnce.current = true;
+      ToastAndroid.show('한 번 더 누르면 종료됩니다', ToastAndroid.SHORT);
+      setTimeout(() => { backPressedOnce.current = false; }, 2000);
+      return true;
+    });
+    return () => handler.remove();
+  }, []);
 
   return (
     <Tabs
@@ -34,13 +54,13 @@ export default function TabsLayout() {
           backgroundColor: isDark ? '#1f2937' : '#ffffff',
           borderTopWidth: 1,
           borderTopColor: isDark ? '#374151' : '#e5e7eb',
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom + 8,
-          paddingTop: 8,
+          height: 64 + insets.bottom,
+          paddingBottom: insets.bottom + 10,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '600',
+          fontWeight: '700',
         },
         header: ({ options }) => {
           const title =
@@ -72,8 +92,8 @@ export default function TabsLayout() {
         options={{
           title: '음악',
           headerTitle: '치즈스테레오 음악',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="musical-notes" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'musical-notes' : 'musical-notes-outline'} size={size} color={color} />
           ),
         }}
       />
@@ -82,8 +102,8 @@ export default function TabsLayout() {
         options={{
           title: '영상',
           headerTitle: '치즈스테레오 영상',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="play-circle" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'play-circle' : 'play-circle-outline'} size={size} color={color} />
           ),
         }}
       />
@@ -92,8 +112,8 @@ export default function TabsLayout() {
         options={{
           title: '저장',
           headerTitle: '나중에 보기',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bookmark" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'bookmark' : 'bookmark-outline'} size={size} color={color} />
           ),
         }}
       />
@@ -102,8 +122,8 @@ export default function TabsLayout() {
         options={{
           title: '정보',
           headerTitle: '정보',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="information-circle" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} size={size} color={color} />
           ),
         }}
       />

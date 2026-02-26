@@ -90,7 +90,7 @@ export default function VideosScreen() {
         renderItem={({ item, index }) => (
           <VideoCard video={item} onPress={() => handleVideoPress(item)} index={index} />
         )}
-        contentContainerStyle={{ paddingVertical: 16 }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 88 }}
       />
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Dimensions, Share, Alert } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,6 +10,7 @@ import { getRelativeTime } from '../../services/youtube';
 import { Header } from '../../components/Header';
 import { YOUTUBE_URLS } from '../../constants/youtube';
 import { usePlayer } from '../../contexts/PlayerContext';
+import { ALBUMS } from '../../constants/catalog';
 
 const { width } = Dimensions.get('window');
 
@@ -38,6 +39,15 @@ export default function PlayerScreen() {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedId]);
+
+  const lyrics = useMemo(() => {
+    if (!resolvedId) return undefined;
+    for (const album of ALBUMS) {
+      const track = album.tracks.find((t) => t.youtubeId === resolvedId);
+      if (track?.lyrics) return track.lyrics;
+    }
+    return undefined;
   }, [resolvedId]);
 
   const onStateChange = useCallback((state: string) => {
@@ -91,6 +101,9 @@ export default function PlayerScreen() {
             play={playing}
             videoId={resolvedId}
             onChangeState={onStateChange}
+            webViewProps={{
+              allowsFullscreenVideo: true,
+            }}
           />
         </View>
 
@@ -113,6 +126,17 @@ export default function PlayerScreen() {
               <View className="mt-2 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
                 <Text className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
                   {description}
+                </Text>
+              </View>
+            ) : null}
+            {lyrics ? (
+              <View className="mt-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+                <View className="flex-row items-center mb-3">
+                  <Ionicons name="musical-note-outline" size={16} color="#ef4444" />
+                  <Text className="text-red-500 font-bold text-sm ml-2">가사</Text>
+                </View>
+                <Text className="text-gray-700 dark:text-gray-300 text-base leading-loose">
+                  {lyrics}
                 </Text>
               </View>
             ) : null}

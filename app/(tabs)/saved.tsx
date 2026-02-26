@@ -120,7 +120,7 @@ export default function SavedScreen() {
       <FlatList
         data={list}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 88 }}
         renderItem={({ item }) => (
           <SavedCard
             item={item}
