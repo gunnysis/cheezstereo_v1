@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, TouchableOpacity } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,7 +10,7 @@ import { getRelativeTime, getVideoById } from '../../services/youtube';
 import { Header } from '../../components/Header';
 import { YOUTUBE_URLS } from '../../constants/youtube';
 import { usePlayer } from '../../contexts/PlayerContext';
-import { ALBUMS } from '../../constants/catalog';
+import { TRACK_BY_YOUTUBE_ID } from '../../constants/catalog';
 
 const { width } = Dimensions.get('window');
 
@@ -68,14 +68,7 @@ export default function PlayerScreen() {
     }
   }, [resolvedId, resolvedTitle, setCurrentVideo]);
 
-  const lyrics = useMemo(() => {
-    if (!resolvedId) return undefined;
-    for (const album of ALBUMS) {
-      const track = album.tracks.find((t) => t.youtubeId === resolvedId);
-      if (track?.lyrics) return track.lyrics;
-    }
-    return undefined;
-  }, [resolvedId]);
+  const lyrics = resolvedId ? TRACK_BY_YOUTUBE_ID[resolvedId]?.lyrics : undefined;
 
   const onStateChange = useCallback((state: string) => {
     setPlaying(state === 'playing' || state === 'buffering');

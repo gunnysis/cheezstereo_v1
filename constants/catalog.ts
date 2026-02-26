@@ -1,4 +1,4 @@
-import type { Album, CatalogVideo } from '../types/catalog';
+import type { Album, CatalogVideo, Track } from '../types/catalog';
 
 export const ALBUMS: Album[] = [
   {
@@ -115,3 +115,16 @@ export const VIDEOS: CatalogVideo[] = [
   { id: 'QTJXj9GCC2k', title: 'Cheezstereo (치즈스테레오) Interview @ Mirrorball',         category: 'interview', year: 2013 },
   { id: 'jt013pIODHE', title: '[오여홍2] 오여홍 늬우-스 ft. 치즈스테레오',                  category: 'interview', year: 2017 },
 ];
+
+// ─── 파생 룩업 ────────────────────────────────────────────────────────────────
+
+/** 모든 앨범의 트랙을 펼친 단순 배열 */
+export const ALL_TRACKS: readonly Track[] = ALBUMS.flatMap((a) => a.tracks);
+
+/**
+ * YouTube 영상 ID → Track 룩업맵 (O(1) 조회용).
+ * youtubeId가 없는 트랙은 포함되지 않습니다.
+ */
+export const TRACK_BY_YOUTUBE_ID: Readonly<Record<string, Track>> = Object.fromEntries(
+  ALL_TRACKS.filter((t) => t.youtubeId).map((t) => [t.youtubeId!, t])
+);
