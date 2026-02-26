@@ -56,6 +56,26 @@ export interface YouTubeThumbnail {
   height: number;
 }
 
+// YouTube API 응답 - Videos (list) 엔드포인트
+export interface YouTubeVideosListResponse {
+  kind: string;
+  etag: string;
+  items: YouTubeVideoListItem[];
+}
+
+export interface YouTubeVideoListItem {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet: {
+    publishedAt: string;
+    channelId: string;
+    title: string;
+    description: string;
+    channelTitle: string;
+  };
+}
+
 // YouTube API 에러
 export interface YouTubeAPIError {
   error: {

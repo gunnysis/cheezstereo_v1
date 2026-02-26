@@ -4,6 +4,7 @@ import {
   YouTubeVideo,
   YouTubeSearchResponse,
   YouTubeAPIError,
+  YouTubeVideosListResponse,
 } from '../types/youtube';
 import { YOUTUBE_API_BASE_URL, API_CONFIG } from '../constants/youtube';
 
@@ -137,6 +138,39 @@ export const searchChannelVideos = async (
     }));
   } catch (error) {
     throw normalizeYouTubeError(error);
+  }
+};
+
+/**
+ * 비디오 ID로 단건 정보 조회 (videos.list)
+ * @param videoId YouTube 비디오 ID
+ * @returns title, description, publishedAt 또는 null
+ */
+export const getVideoById = async (
+  videoId: string
+): Promise<{ title: string; description: string; publishedAt: string } | null> => {
+  try {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      throw new Error('YouTube API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.');
+    }
+    const response = await axios.get<YouTubeVideosListResponse>(
+      `${YOUTUBE_API_BASE_URL}/videos`,
+      {
+        params: {
+          part: 'snippet',
+          id: videoId,
+          key: apiKey,
+        },
+      }
+    );
+    const item = response.data.items?.[0];
+    if (!item?.snippet) return null;
+    const { title, description, publishedAt } = item.snippet;
+    return { title, description: description ?? '', publishedAt: publishedAt ?? '' };
+  } catch (error) {
+    console.error('getVideoById:', error instanceof Error ? error.message : error);
+    return null;
   }
 };
 
