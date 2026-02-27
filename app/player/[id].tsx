@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, Platform } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -137,26 +137,6 @@ export default function PlayerScreen() {
               allowsFullscreenVideo: true,
             }}
           />
-          <View className="flex-row justify-center items-center py-3 bg-gray-900" pointerEvents="box-none">
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setPlaying((prev) => !prev);
-              }}
-              activeOpacity={0.7}
-              className="p-4 rounded-full bg-white/10 justify-center items-center"
-              style={{ minWidth: 56, minHeight: 56 }}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              accessibilityRole="button"
-              accessibilityLabel={playing ? '일시 정지' : '재생'}
-            >
-              <Ionicons
-                name={playing ? 'pause' : 'play'}
-                size={28}
-                color="#ffffff"
-              />
-            </TouchableOpacity>
-          </View>
         </View>
 
         <ScrollView className="flex-1 bg-white dark:bg-gray-900">
