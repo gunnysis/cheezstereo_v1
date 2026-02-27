@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 export interface CurrentVideo {
   id: string;
@@ -22,14 +22,19 @@ const PlayerContext = createContext<PlayerContextValue>({
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [currentVideo, setCurrentVideoState] = useState<CurrentVideo | null>(null);
 
-  const setCurrentVideo = (video: CurrentVideo | null) => setCurrentVideoState(video);
-  const clearCurrentVideo = () => setCurrentVideoState(null);
+  const setCurrentVideo = useCallback((video: CurrentVideo | null) => {
+    setCurrentVideoState(video);
+  }, []);
+  const clearCurrentVideo = useCallback(() => {
+    setCurrentVideoState(null);
+  }, []);
 
-  return (
-    <PlayerContext.Provider value={{ currentVideo, setCurrentVideo, clearCurrentVideo }}>
-      {children}
-    </PlayerContext.Provider>
+  const value = useMemo(
+    () => ({ currentVideo, setCurrentVideo, clearCurrentVideo }),
+    [currentVideo, setCurrentVideo, clearCurrentVideo],
   );
+
+  return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;
 }
 
 export function usePlayer() {
