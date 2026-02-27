@@ -15,19 +15,17 @@ const TYPE_LABELS: Record<Album['type'], string> = {
   single: '싱글',
 };
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 function AlbumCard({ album, onPress, index }: AlbumCardProps) {
   return (
-    <AnimatedTouchable
-      entering={FadeInDown.delay(index * 100).duration(400)}
-      onPress={onPress}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden flex-row"
-      activeOpacity={0.85}
-      accessibilityRole="button"
-      accessibilityLabel={`${album.title}, ${album.year}년 ${TYPE_LABELS[album.type]}`}
-      accessibilityHint="두 번 탭하면 트랙 목록을 엽니다"
-    >
+    <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
+      <TouchableOpacity
+        onPress={onPress}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden flex-row"
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={`${album.title}, ${album.year}년 ${TYPE_LABELS[album.type]}`}
+        accessibilityHint="두 번 탭하면 트랙 목록을 엽니다"
+      >
       {/* 앨범 커버 (색상 플레이스홀더) */}
       <View
         className="w-24 h-24 items-center justify-center p-2"
@@ -67,7 +65,8 @@ function AlbumCard({ album, onPress, index }: AlbumCardProps) {
       <View className="items-center justify-center pr-4">
         <Text className="text-gray-400 dark:text-gray-500 text-lg">›</Text>
       </View>
-    </AnimatedTouchable>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 

@@ -14,8 +14,6 @@ interface TrackItemProps {
   albumYear?: number;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 function TrackItem({ track, trackNumber, onPress, index, albumYear }: TrackItemProps) {
   const isPlayable = !!track.youtubeId;
 
@@ -33,17 +31,17 @@ function TrackItem({ track, trackNumber, onPress, index, albumYear }: TrackItemP
   };
 
   return (
-    <AnimatedTouchable
-      entering={FadeInDown.delay(index * 60).duration(350)}
-      onPress={onPress}
-      disabled={!isPlayable}
-      className="flex-row items-center px-4 py-3 border-b border-gray-100 dark:border-gray-800"
-      style={{ opacity: isPlayable ? 1 : 0.45 }}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={`${trackNumber}번 트랙, ${track.title}${isPlayable ? '' : ', 재생 불가'}`}
-      accessibilityHint={isPlayable ? '두 번 탭하면 재생합니다' : 'YouTube에서 제공되지 않는 곡입니다'}
-    >
+    <Animated.View entering={FadeInDown.delay(index * 60).duration(350)}>
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={!isPlayable}
+        className="flex-row items-center px-4 py-3 border-b border-gray-100 dark:border-gray-800"
+        style={{ opacity: isPlayable ? 1 : 0.45 }}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`${trackNumber}번 트랙, ${track.title}${isPlayable ? '' : ', 재생 불가'}`}
+        accessibilityHint={isPlayable ? '두 번 탭하면 재생합니다' : 'YouTube에서 제공되지 않는 곡입니다'}
+      >
       <Text className="text-gray-400 dark:text-gray-500 text-sm w-8 text-center">
         {trackNumber}
       </Text>
@@ -71,7 +69,8 @@ function TrackItem({ track, trackNumber, onPress, index, albumYear }: TrackItemP
           <Ionicons name="lock-closed-outline" size={16} color="#9ca3af" />
         )}
       </View>
-    </AnimatedTouchable>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 

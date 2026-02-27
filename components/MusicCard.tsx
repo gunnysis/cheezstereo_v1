@@ -13,23 +13,21 @@ interface MusicCardProps {
   index: number;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 function MusicCard({ video, onPress, onLongPress, index }: MusicCardProps) {
   const relativeTime = getRelativeTime(video.publishedAt);
 
   return (
-    <AnimatedTouchable
-      entering={FadeInDown.delay(index * 100).duration(400)}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden"
-      activeOpacity={0.9}
-      accessibilityRole="button"
-      accessibilityLabel={`${video.title}, ${relativeTime}`}
-      accessibilityHint="두 번 탭하면 재생합니다. 길게 누르면 더 보기"
-    >
-      <VideoThumbnail uri={video.thumbnail} />
+    <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
+      <TouchableOpacity
+        onPress={onPress}
+        onLongPress={onLongPress}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden"
+        activeOpacity={0.9}
+        accessibilityRole="button"
+        accessibilityLabel={`${video.title}, ${relativeTime}`}
+        accessibilityHint="두 번 탭하면 재생합니다. 길게 누르면 더 보기"
+      >
+        <VideoThumbnail uri={video.thumbnail} />
 
       <View className="p-4">
         <Text
@@ -44,7 +42,8 @@ function MusicCard({ video, onPress, onLongPress, index }: MusicCardProps) {
           <Text className="text-gray-500 dark:text-gray-400 text-base ml-1">{relativeTime}</Text>
         </View>
       </View>
-    </AnimatedTouchable>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
