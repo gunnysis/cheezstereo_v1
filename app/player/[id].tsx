@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, Platform } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -23,6 +23,7 @@ export default function PlayerScreen() {
   }>();
   const router = useRouter();
   const { setCurrentVideo, clearCurrentVideo } = usePlayer();
+  const backHandledRef = useRef(false);
   const [playing, setPlaying] = useState(true);
   const [fetchedMeta, setFetchedMeta] = useState<{
     title: string;
@@ -85,7 +86,10 @@ export default function PlayerScreen() {
   };
 
   useEffect(() => {
+    backHandledRef.current = false;
     const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (backHandledRef.current) return true;
+      backHandledRef.current = true;
       clearCurrentVideo();
       router.back();
       return true;

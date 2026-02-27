@@ -36,7 +36,10 @@ export default function TabsLayout() {
       const path = pathnameRef.current || '';
       const isOnTabScreen = !path.startsWith('/album') && !path.startsWith('/player');
       if (!isOnTabScreen) return false;
-      if (backPressedOnce.current) return false;
+      if (backPressedOnce.current) {
+        BackHandler.exitApp();
+        return true;
+      }
       backPressedOnce.current = true;
       ToastAndroid.show('한 번 더 누르면 종료됩니다', ToastAndroid.SHORT);
       setTimeout(() => { backPressedOnce.current = false; }, 2000);

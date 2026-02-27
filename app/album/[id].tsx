@@ -71,8 +71,10 @@ export default function AlbumScreen() {
       <SafeAreaView edges={['top']} style={{ backgroundColor: album.coverColor }}>
         <Header
           title={album.title}
+          subtitle={`${album.year} · ${TYPE_LABELS[album.type]}`}
           variant="tabs"
           safeAreaTop={false}
+          backgroundColor={album.coverColor}
           leftButton={{
             icon: 'arrow-back',
             onPress: handleBack,

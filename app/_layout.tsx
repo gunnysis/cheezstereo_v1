@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getVideoIdFromDeepLink } from '../utils/deepLink';
 import { PlayerProvider } from '../contexts/PlayerContext';
 import MiniPlayer from '../components/MiniPlayer';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import '../global.css';
 
 export default function RootLayout() {
@@ -28,14 +29,18 @@ export default function RootLayout() {
   }, [router]);
 
   return (
-    <SafeAreaProvider>
-      <PlayerProvider>
-        <View style={{ flex: 1 }} className={colorScheme === 'dark' ? 'dark' : ''}>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <Stack screenOptions={{ headerShown: false }} />
-          <MiniPlayer />
-        </View>
-      </PlayerProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <PlayerProvider>
+          <View style={{ flex: 1 }} className={colorScheme === 'dark' ? 'dark' : ''} collapsable={false}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack screenOptions={{ headerShown: false }} />
+            <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 200 }} pointerEvents="box-none" collapsable={false}>
+              <MiniPlayer />
+            </View>
+          </View>
+        </PlayerProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }

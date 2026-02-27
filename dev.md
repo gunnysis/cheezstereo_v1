@@ -1,5 +1,8 @@
 # 개발 참고
 
+## 레이아웃/크래시 방지
+- **루트 직계 자식 unmount 금지**: `_layout.tsx` 루트 View의 직계 자식(Stack, MiniPlayer 래퍼 등)은 조건부로 제거하지 말 것. 숨기려면 해당 슬롯에 placeholder View 또는 `opacity: 0` + `pointerEvents="none"` 사용. (SafeAreaProvider null child 크래시 방지)
+
 npx expo run:android
 npx expo start --clear
 ==============================

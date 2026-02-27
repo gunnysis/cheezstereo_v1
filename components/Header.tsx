@@ -7,9 +7,13 @@ type HeaderVariant = 'tabs' | 'player';
 
 type HeaderProps = {
   title: string;
+  /** Optional subtitle (e.g. album year and type) */
+  subtitle?: string;
   variant?: HeaderVariant;
   /** false when header is inside SafeAreaView (e.g. player screen) */
   safeAreaTop?: boolean;
+  /** Override header background color (e.g. album cover color) */
+  backgroundColor?: string;
   leftButton?: {
     icon: keyof typeof Ionicons.glyphMap;
     onPress: () => void;
@@ -48,15 +52,18 @@ const variantStyles: Record<
 
 export function Header({
   title,
+  subtitle,
   variant = 'tabs',
   safeAreaTop = true,
+  backgroundColor: backgroundColorProp,
   leftButton,
   rightButton,
 }: HeaderProps) {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === 'dark';
   const style = variantStyles[variant];
-  const tabsBg = variant === 'tabs' && isDark ? TABS_BG_DARK : (variant === 'tabs' ? TABS_BG : '#111827');
+  const defaultBg = variant === 'tabs' && isDark ? TABS_BG_DARK : (variant === 'tabs' ? TABS_BG : '#111827');
+  const tabsBg = backgroundColorProp ?? defaultBg;
   const tabsTitleColor = variant === 'tabs' && isDark ? TABS_TITLE_COLOR_DARK : style.titleColor;
   const tabsButtonColor = variant === 'tabs' && isDark ? TABS_BUTTON_COLOR_DARK : style.buttonColor;
   const tabsBorderColor = variant === 'tabs' && isDark ? 'rgba(255,255,255,0.08)' : style.borderColor;
@@ -97,6 +104,7 @@ export function Header({
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={leftButton.accessibilityLabel ?? '뒤로 가기'}
+          accessibilityHint={leftButton.icon === 'arrow-back' ? '이전 화면으로 돌아갑니다' : leftButton.icon === 'close' ? '플레이어를 닫습니다' : undefined}
         >
           <Ionicons name={leftButton.icon} size={22} color={tabsButtonColor} />
         </TouchableOpacity>
@@ -104,17 +112,28 @@ export function Header({
         <View style={styles.placeholder} />
       )}
 
-      <Text
-        style={[
-          styles.title,
-          { color: variant === 'tabs' ? tabsTitleColor : style.titleColor },
-          variant === 'tabs' && styles.titleTabs,
-        ]}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {title}
-      </Text>
+      <View style={styles.titleWrap}>
+        <Text
+          style={[
+            styles.title,
+            { color: variant === 'tabs' ? tabsTitleColor : style.titleColor },
+            variant === 'tabs' && styles.titleTabs,
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text
+            style={[styles.subtitle, { color: variant === 'tabs' ? (isDark ? '#9ca3af' : '#78716c') : 'rgba(255,255,255,0.8)' }]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
 
       {rightButton ? (
         <TouchableOpacity
@@ -128,6 +147,7 @@ export function Header({
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={rightButton.accessibilityLabel ?? '버튼'}
+          accessibilityHint={rightButton.accessibilityLabel === '채널 링크' ? 'YouTube 채널을 엽니다' : rightButton.accessibilityLabel === '공유하기' ? '영상을 공유합니다' : undefined}
         >
           <Ionicons name={rightButton.icon} size={22} color={variant === 'tabs' ? tabsButtonColor : style.buttonColor} />
         </TouchableOpacity>
@@ -137,7 +157,15 @@ export function Header({
     </View>
   );
 
-  return <View style={containerStyle}>{inner}</View>;
+  return (
+    <View
+      style={containerStyle}
+      accessibilityRole="header"
+      accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
+    >
+      {inner}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -163,16 +191,24 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
   },
-  title: {
+  titleWrap: {
     flex: 1,
+    marginHorizontal: 8,
+    justifyContent: 'center',
+  },
+  title: {
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 0.3,
     textAlign: 'center',
-    marginHorizontal: 8,
   },
   titleTabs: {
     fontWeight: '800',
     letterSpacing: 0.5,
+  },
+  subtitle: {
+    fontSize: 12,
+    marginTop: 2,
+    textAlign: 'center',
   },
 });

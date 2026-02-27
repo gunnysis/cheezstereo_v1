@@ -16,8 +16,7 @@ function MiniPlayer() {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === 'dark';
 
-  if (!currentVideo || pathname.startsWith('/player')) return null;
-
+  const visible = !!(currentVideo && !pathname.startsWith('/player'));
   const isOnTabScreen = ['/', '/music', '/videos', '/saved', '/about'].some(
     (p) => pathname === p || pathname.endsWith(p)
   );
@@ -44,6 +43,10 @@ function MiniPlayer() {
     clearCurrentVideo();
   };
 
+  if (!visible) {
+    return <View style={{ height: 0, opacity: 0 }} pointerEvents="none" collapsable={false} />;
+  }
+
   return (
     <Animated.View
       entering={SlideInDown.springify().damping(18)}
@@ -56,6 +59,7 @@ function MiniPlayer() {
         zIndex: 200,
         paddingHorizontal: 12,
       }}
+      collapsable={false}
     >
       <View
         style={{
