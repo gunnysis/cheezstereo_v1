@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, FlatList, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, FlatList, Alert, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -56,6 +56,15 @@ export default function AlbumScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.back();
   };
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      router.back();
+      return true;
+    });
+    return () => handler.remove();
+  }, [router]);
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-gray-900">

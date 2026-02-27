@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Dimensions, Share, Alert, BackHandler, TouchableOpacity, Platform } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -73,6 +73,7 @@ export default function PlayerScreen() {
   const onStateChange = useCallback((state: string) => {
     setPlaying(state === 'playing' || state === 'buffering');
     if (state === 'ended') {
+      setPlaying(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   }, []);
@@ -131,18 +132,21 @@ export default function PlayerScreen() {
             play={playing}
             videoId={resolvedId}
             onChangeState={onStateChange}
+            forceAndroidAutoplay={Platform.OS === 'android'}
             webViewProps={{
               allowsFullscreenVideo: true,
             }}
           />
-          <View className="flex-row justify-center items-center py-3 bg-gray-900">
+          <View className="flex-row justify-center items-center py-3 bg-gray-900" pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setPlaying((prev) => !prev);
               }}
               activeOpacity={0.7}
-              className="p-3 rounded-full bg-white/10"
+              className="p-4 rounded-full bg-white/10 justify-center items-center"
+              style={{ minWidth: 56, minHeight: 56 }}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               accessibilityRole="button"
               accessibilityLabel={playing ? '일시 정지' : '재생'}
             >
