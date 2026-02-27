@@ -29,6 +29,41 @@ eas build --platform all --profile production --auto-submit
 
 No test runner or linter is configured.
 
+## 배포 전 필수 절차
+
+> **중요**: 배포에 영향을 주는 변경사항을 완료한 후, Claude는 아래 체크리스트를 사용자에게 보고하고 **명시적 승인을 받은 뒤**에만 워크플로우 실행을 안내해야 한다. PR merge만으로 배포가 자동 트리거되지 않는다 (수동 트리거 방식).
+
+### 핑거프린트 영향 분석
+
+변경된 파일을 기준으로 배포 경로를 판단한다:
+
+| 변경 파일 | 분류 | 결과 |
+|---|---|---|
+| `app/`, `components/`, `constants/`, `services/`, `hooks/`, `contexts/`, `utils/`, `types/` | JS only | 핑거프린트 유지 → **OTA 배포** |
+| `android/`, `ios/` | 네이티브 변경 | 핑거프린트 변경 → **새 빌드 + Play Store 제출** |
+| `app.config.js` (plugins, permissions 수정) | 네이티브 변경 | 핑거프린트 변경 → **새 빌드 + Play Store 제출** |
+| `package.json` (네이티브 모듈 추가/삭제) | 네이티브 변경 | 핑거프린트 변경 → **새 빌드 + Play Store 제출** |
+
+### 버전 변경 규칙
+
+새 **네이티브 빌드**를 Play Store에 제출하는 경우, 반드시 두 곳 모두 버전을 올린다:
+- `app.config.js` → `version` 필드
+- `package.json` → `version` 필드
+
+버전 체계: `patch` (버그 수정) / `minor` (새 기능) / `major` (대규모 변경)
+OTA 전용 배포는 버전 변경 불필요 (`versionCode`는 EAS가 자동 관리).
+
+### Claude 의무 체크리스트 (배포 전 사용자에게 보고)
+
+```
+[ ] 변경 유형: JS only / 네이티브 포함
+[ ] 핑거프린트 변경 여부: 변경 / 유지
+[ ] 예상 배포 경로: OTA 업데이트 / 새 빌드 + Play Store 제출
+[ ] (새 빌드인 경우) version 번호 갱신 완료: app.config.js + package.json
+[ ] 사용자 최종 확인 대기
+[ ] 확인 후 EAS 워크플로우 수동 실행: eas workflow:run production-android.yml
+```
+
 ## Architecture
 
 ### Routing (Expo Router v6, file-based)
@@ -116,4 +151,4 @@ app/_layout.tsx
 - Android production uses local credentials (`credentials/` dir, gitignored)
 - Version managed remotely by EAS (`appVersionSource: "remote"`)
 - New Architecture enabled (`newArchEnabled: true`)
-- Current version: **1.2.0** (versionCode 9)
+- Current version: **1.3.0**
