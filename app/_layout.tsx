@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking';
+import * as Updates from 'expo-updates';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,9 +11,26 @@ import MiniPlayer from '../components/MiniPlayer';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import '../global.css';
 
+async function checkAndApplyOTAUpdate() {
+  if (__DEV__) return;
+  try {
+    const update = await Updates.checkForUpdateAsync();
+    if (update.isAvailable) {
+      await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
+    }
+  } catch {
+    // 업데이트 실패 시 무시하고 앱 정상 실행
+  }
+}
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
+
+  useEffect(() => {
+    checkAndApplyOTAUpdate();
+  }, []);
 
   useEffect(() => {
     const handleUrl = (url: string) => {
