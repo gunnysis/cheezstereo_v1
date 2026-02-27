@@ -14,8 +14,7 @@
 name: Android 프로덕션 배포
 
 on:
-  push:
-    branches: ['main']
+  workflow_dispatch:
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
